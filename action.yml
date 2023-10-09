@@ -1,0 +1,37 @@
+name: Deploy Docker
+description: Use this action when you want to deploy an already built docker image
+
+inputs:
+  ssh-server:
+    required: true
+    description: "Indicate the ssh server address to deploy on. It could be an EC2, GCE or any server instance on the cloud"
+  ssh-private-key:
+    required: true
+    description: "Provide a valid private key to be able to connect to the server"
+  env:
+    required: false
+    description: "Provide the environment variables you want to set to the container"
+    default: ""
+  image:
+    required: true
+    description: "The image you want to deploy (owner/image_name:tag). If it's a private image, make sure the server is logged in to the right docker account."
+  container-name:
+    required: true
+    description: "The name to attribute to the container"
+  port:
+    required: true
+    description: "Forward a port"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - run: |
+        echo "${{ inputs.ssh-private-key }}" > private_key.pem
+        chmod 400 private_key.pem
+        ls -la
+        scp -i private_key.pem -o StrictHostKeyChecking=no scripts/deploy.sh ${{ inputs.ssh-server }}:/tmp/deploy_${{ inputs.container-name }}.sh
+        ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ inputs.ssh-server }} <<EOF
+          chmod +x -R /tmp/deploy_${{ inputs.container-name }}.sh
+          sh /tmp/deploy_${{ inputs.container-name }}.sh ${{ inputs. }} "${{ inputs.image }}" ${{ inputs.port }}
+        EOF
