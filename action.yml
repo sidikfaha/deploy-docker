@@ -38,3 +38,4 @@ runs:
           chmod +x -R /tmp/deploy_${{ inputs.container-name }}.sh
           sh /tmp/deploy_${{ inputs.container-name }}.sh ${{ inputs. }} "${{ inputs.image }}" ${{ inputs.port }}
         EOF
+      shell: sh
