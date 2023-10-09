@@ -1,5 +1,6 @@
 name: Deploy Docker
 description: Use this action when you want to deploy an already built docker image
+icon: upload-cloud
 
 inputs:
   ssh-server:
